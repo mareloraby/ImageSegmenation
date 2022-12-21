@@ -105,7 +105,7 @@ def create_cluster(features, centers,k):
         clusters[closest_centroid].append(point_idx)
     return clusters 
 
-# fast
+# assign points to clusters fast
 def create_cluster_fast(features, centers,k):
     clusters = [[] for _ in range(k)]
     dists = cdist(features, centers, metric='euclidean') 
