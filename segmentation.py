@@ -33,7 +33,8 @@ def kmeans(features, k, num_iters=100):
     idxs = np.random.choice(N, size=k, replace=False) # chooses k random indices less than N as clusters and returns an array of the random indices
     centers = features[idxs]
     assignments = np.zeros(N, dtype=np.uint32)
-    ### START OF CODE
+
+    ### YOUR CODE HERE
     for _ in range(num_iters):
         clusters = create_cluster(features, centers, k) # create cluster
         previous_centers = centers
@@ -48,44 +49,11 @@ def kmeans(features, k, num_iters=100):
     return assignments
 
 
-# helper methods for kmeans
-# assign points to clusters
-def create_cluster(features, centers,k):
-    clusters = [[] for _ in range(k)]
-    for point_idx, point in enumerate(features):
-        closest_centroid = np.argmin(
-            np.sqrt(np.sum((point-centers)**2, axis=1))
-        ) # closest centroid using euclidean distance
-        clusters[closest_centroid].append(point_idx)
-    return clusters 
-
-# new centroids
-def calculate_new_centroids(features,clusters,k):
-    centers = np.zeros((K, len(features)))
-    for idx, cluster in enumerate(clusters):
-        new_centroid = np.mean(features[cluster], axis=0) # find new centroids
-        centers[idx] = new_centroid
-
-    return centers 
-
- # prediction
-def predict_cluster(clusters, N):
-    y_pred = np.zeros(N, dtype=np.uint32) 
-    for cluster_idx, cluster in enumerate(clusters):
-        for sample_idx in cluster:
-            y_pred[sample_idx] = cluster_idx
-            
-    return y_pred           
-
-
-##############################################################
-
-
 def kmeans_fast(features, k, num_iters=100):
     """ Use kmeans algorithm to group features into k clusters.
 
     This function makes use of numpy functions and broadcasting to speed up the
-    first part(cluster assignment) of kmeans algorithm.
+    first part (cluster assignment) of kmeans algorithm.
 
     Hints
     - You may find cdist (imported from scipy.spatial.distance) and np.argmin useful
@@ -110,14 +78,61 @@ def kmeans_fast(features, k, num_iters=100):
     centers = features[idxs]
     assignments = np.zeros(N, dtype=np.uint32)
 
-    for n in range(num_iters):
         ### YOUR CODE HERE
-        pass
-        ### END YOUR CODE
+    for _ in range(num_iters):
+        clusters = create_cluster_fast(features, centers, k) # create cluster
+        previous_centers = centers
+        centers = calculate_new_centroids(features,clusters,k)
+        diff = centers - previous_centers
+        if not diff.any():
+            break # stop when centroids are optimized
+        # pass
+    assignments = predict_cluster(clusters, N)
+    ### END YOUR CODE
 
     return assignments
 
 
+# helper methods for kmeans:
+
+# assign points to clusters
+def create_cluster(features, centers,k):
+    clusters = [[] for _ in range(k)]
+    for point_idx, point in enumerate(features):
+        closest_centroid = np.argmin(
+            np.sqrt(np.sum((point-centers)**2, axis=1))
+        ) # closest centroid using euclidean distance
+        clusters[closest_centroid].append(point_idx)
+    return clusters 
+
+# fast
+def create_cluster_fast(features, centers,k):
+    clusters = [[] for _ in range(k)]
+    dists = cdist(features, centers, metric='euclidean') 
+    result = np.argmin(dists,1)
+    for point_idx, assigned_cluster in enumerate(result):
+        clusters[assigned_cluster].append(point_idx)
+    return clusters 
+
+# new centroids
+def calculate_new_centroids(features,clusters,k):
+    centers = np.zeros((k, features.shape[1]))
+    for idx, cluster in enumerate(clusters):
+        new_centroid = np.mean(features[cluster], axis=0) # find new centroids
+        centers[idx] = new_centroid
+
+    return centers 
+
+ # prediction
+def predict_cluster(clusters, N):
+    y_pred = np.zeros(N, dtype=np.uint32) 
+    for cluster_idx, cluster in enumerate(clusters):
+        for sample_idx in cluster:
+            y_pred[sample_idx] = cluster_idx
+            
+    return y_pred           
+
+# End of helper methods of Kmeans
 
 def hierarchical_clustering(features, k):
     """ Run the hierarchical agglomerative clustering algorithm.
