@@ -204,7 +204,7 @@ def color_features(img):
     features = np.zeros((H*W, C))
 
     ### YOUR CODE HERE
-    pass
+    features = img.reshape(H*W, C)
     ### END YOUR CODE
 
     return features
@@ -233,9 +233,27 @@ def color_position_features(img):
     features = np.zeros((H*W, C+2))
 
     ### YOUR CODE HERE
-    pass
-    ### END YOUR CODE
+    
+    imageIndices = np.dstack(np.mgrid[0:H,0:W])
+    # print(color[0][0])
+    # print(color[0][0][0])
+    # print(img[0].size)
+    # print(imageIndices[0])
 
+    n = 0
+    for i in range (0,H):
+      for j in range (0,W):
+        features[n][0] = color[i][j][0]
+        features[n][1] = color[i][j][1]
+        features[n][2] = color[i][j][2]
+        features[n][3] = imageIndices[i][j][0]
+        features[n][4] = imageIndices[i][j][1]
+        n +=1
+    
+    features -= np.mean(features, axis=0)   #set mean to zero
+    features /= np.std(features, axis=0)
+      
+    ### END YOUR CODE
     return features
 
 ### Quantitative Evaluation
@@ -257,7 +275,8 @@ def compute_accuracy(mask_gt, mask):
 
     accuracy = None
     ### YOUR CODE HERE
-    pass
+    isEqual = mask_gt == mask
+    accuracy = np.mean(isEqual)
     ### END YOUR CODE
 
     return accuracy
