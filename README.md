@@ -1,6 +1,6 @@
 # Image Segmenation
 
-> Assignment 2 and 3 of DMET 901 Computer Vision course for Winter 2022 and Standford's CS131 Computer Vision: Foundation and Application course.
+> Assignment 2 and 3 of DMET 901 Computer Vision course for Winter 2022 and HW6 of Standford's CS131 Computer Vision: Foundation and Application course.
 
 We use k-means clustering algorithm to segment images. We then use these segmentations to identify foreground and background objects, and evaluate the computed segmentations against a dataset of ground-truth segmentations.
 
